@@ -2,7 +2,7 @@
 
 Predicting **real-world distances in meters** from a single photograph using a camera-aware encoder–decoder CNN. Trained on NYU Depth V2, validated on phone-captured indoor scenes.
 
-Built during my research internship at **DRDO-ARDE** (Armament Research & Development Establishment), Pune — January to April 2025, under the supervision of Nikhil Sharma. Applications include autonomous navigation, robotics perception, and 3D reconstruction for unmanned platforms.
+Built during my research internship at **DRDO-ARDE** (Armament Research & Development Establishment), Pune — Feb to April 2026, under the supervision of Nikhil Sharma. Applications include autonomous navigation, robotics perception, and 3D reconstruction for unmanned platforms.
 
 ---
 
