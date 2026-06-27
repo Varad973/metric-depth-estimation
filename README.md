@@ -17,6 +17,19 @@ Given a single RGB image and the camera's intrinsic parameters (focal length and
 | test1.jpeg | 0.94 m | 3.06 m | 2.11 m |
 | test2.jpeg | 1.11 m | 2.64 m | 1.70 m |
 
+### Visual results
+
+**Indoor scene — depth map prediction**
+
+![Depth prediction on indoor scene](sample_outputs/imp1.png)
+
+RGB input on the left, predicted metric depth on the right (inferno colormap — bright = closer, dark = farther). The model correctly recovers depth ordering across the scene, from the foreground equipment (~1.2 m) to the back wall and doorway (~2.4 m), including reflections on the marble floor.
+
+**Click-to-measure tool — interactive depth queries**
+
+![Click to measure interface](sample_outputs/imp2.png)
+
+I built an interactive overlay that lets you click any pixel in the RGB image and read out the predicted depth in meters. Sample queries on this scene: floor point at 1.80 m, mid-wall at 2.24 m, far corner at 2.66 m. This was the validation tool I used to sanity-check the model's outputs against real-world geometry.
 ---
 
 ## Why This Problem Is Hard
