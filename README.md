@@ -1,56 +1,95 @@
-# Metric Depth Estimation — Complete Project
+# ☁️ SaaS Cloud with HDFS-style Storage + AES Encryption
 
-## What This Project Does
-Takes a single photo and predicts exactly how far away (in meters) every object is.
+## 🎯 What This Does
+- **cloud_server.py** = Your cloud (the "SaaS" — runs on one machine)
+- **cloud_client.py** = User's program (uploads/downloads files)
+- Files are split into **blocks** (like HDFS does)
+- Each block is **encrypted with AES** before uploading
+- Blocks are decrypted and rejoined when downloaded
 
-## How This Is Different From Your Earlier MiDaS Project (2D_3D Projection)
-| Your Earlier Project (2D_3D) | THIS Project |
-|------------------------------|-------------|
-| Relative depth: 0.0 to 1.0 | Real depth: 2.3 meters, 5.1 meters, etc. |
-| No camera info used | Uses camera focal length, sensor data |
-| Pre-trained MiDaS only | You train your own model |
-| Any random object | Train on new custom objects too |
-| Visual comparison only | Accuracy metrics + focal length validation |
+## 📦 Setup (One-Time)
 
----
-
-## COMPLETE SETUP GUIDE (Assuming Zero Knowledge)
-
-### Step A: Install Required Software
-
-1. Install VS Code — https://code.visualstudio.com/
-2. Install Python 3.10+ — https://www.python.org/downloads/
-   CRITICAL: Check "Add Python to PATH" during install
-3. Install Git — https://git-scm.com/downloads/
-4. (Optional) Install CUDA for NVIDIA GPU — https://developer.nvidia.com/cuda-downloads
-
-### Step B: Open Project in VS Code
-
-1. Open VS Code
-2. File > Open Folder > select this metric_depth_project folder
-3. Open Terminal: View > Terminal (or Ctrl+`)
-
-### Step C: Create Virtual Environment and Install Packages
-
+### Step 1: Install Python libraries
 ```bash
-python -m venv venv
-
-# Windows:
-venv\Scripts\activate
-# Mac/Linux:
-source venv/bin/activate
-
-pip install -r requirements.txt
+pip install flask requests cryptography
 ```
 
+That's it. No Hadoop install, no AWS needed for testing.
+
 ---
 
-## PROJECT EXECUTION ORDER
+## 🚀 How to Run
 
-Step 1: Camera Calibration    → Find fx, fy, cx, cy
-Step 2: Get Training Data     → NYU Depth V2 or your own photos
-Step 3: Train the Model       → Custom depth estimation network
-Step 4: Predict Depth         → Run on any new image
-Step 5: Validate Accuracy     → Check focal length + metrics
+### Option A — Both files on SAME machine (testing)
 
-See each step's folder for detailed instructions.
+**Terminal 1:** Start the cloud server
+```bash
+python cloud_server.py
+```
+You'll see: `Listening on : http://localhost:5000`
+
+**Terminal 2:** Run the client
+```bash
+python cloud_client.py
+```
+Use the menu: 1 to upload, 2 to download, 3 to list.
+
+### Option B — Cloud on AWS EC2, Client on your laptop
+
+1. Launch an Ubuntu EC2 instance (free tier is fine)
+2. In the EC2 Security Group → allow inbound port 5000
+3. SSH into EC2:
+   ```bash
+   sudo apt update && sudo apt install python3-pip -y
+   pip3 install flask cryptography
+   # copy cloud_server.py to EC2
+   python3 cloud_server.py
+   ```
+4. On your laptop, edit `cloud_client.py`:
+   ```python
+   SERVER_URL = "http://<EC2-PUBLIC-IP>:5000"
+   ```
+5. Run the client locally.
+
+### Option C — Over LAN (your lab requirement)
+
+1. Run `cloud_server.py` on **one lab PC** (find its IP with `ipconfig` / `ifconfig`)
+2. On other PCs, edit `cloud_client.py`:
+   ```python
+   SERVER_URL = "http://<server-pc-ip>:5000"
+   ```
+3. Make sure firewall allows port 5000.
+
+---
+
+## 🧪 Demo Steps (For Your Practical Exam)
+
+1. Start the server in one terminal
+2. Create a test file:
+   ```bash
+   echo "Hello cloud, this is my secret data!" > test.txt
+   ```
+3. Run the client → choose `1` → enter `test.txt`
+4. Open `cloud_storage/` folder → you'll see encrypted blocks (open one in Notepad — it's gibberish! ✅ proves encryption works)
+5. Run the client → choose `2` → enter `test.txt`
+6. Check `downloads/test.txt` — original content restored! ✅
+
+---
+
+## 💡 What to Say in Viva
+
+| Question | Answer |
+|----------|--------|
+| What is SaaS here? | The cloud server provides "file storage as a service" over HTTP |
+| How is HDFS implemented? | Files are split into fixed-size blocks (64KB) and stored separately, with metadata tracking block→file mapping (like NameNode) |
+| What encryption is used? | AES (via Fernet from `cryptography` library) — symmetric encryption |
+| Why encrypt before upload? | So even if cloud storage is compromised, attackers can't read files without the key |
+| How is data split? | File is read in 64KB chunks; each chunk becomes one block |
+| Why a metadata.json file? | It mimics HDFS NameNode — keeps track of which blocks belong to which file |
+| Cloud Controller? | The Flask server with routes for upload/download/list — it controls all cloud operations |
+
+---
+
+## 📁 Block Size Note
+Real HDFS uses **128 MB blocks**. We use **64 KB** so you can test with small files.
+To change: edit `BLOCK_SIZE` in `cloud_client.py`.
