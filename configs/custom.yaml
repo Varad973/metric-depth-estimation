@@ -1,0 +1,54 @@
+# ============================================
+# CONFIG FOR YOUR OWN CUSTOM DATA
+# ============================================
+# Use this when training on photos you captured yourself.
+# Copy this to configs/ and edit the values.
+#
+# RUN: python step3_training/train.py --config configs/custom.yaml
+
+dataset:
+  name: "custom"
+  data_dir: "data/custom"           # YOUR custom data folder
+  train_split: 0.8
+  image_height: 480
+  image_width: 640
+  max_depth: 10.0                   # Adjust to your max distance
+  min_depth: 0.3                    # Closest object distance
+
+# CHANGE THESE to YOUR camera's values!
+# Get them from Step 1 (camera_params.json)
+camera:
+  params_file: "camera_params.json"  # Load from file
+
+model:
+  encoder: "efficientnet_b4"
+  pretrained_encoder: true
+  decoder_channels: [256, 128, 64, 32, 16]
+  use_camera_intrinsics: true
+
+training:
+  epochs: 100                       # More epochs for small datasets
+  batch_size: 4                     # Smaller batch for small datasets
+  learning_rate: 0.00005            # Lower LR for fine-tuning
+  weight_decay: 0.01
+  lr_scheduler: "cosine"
+  gradient_clip: 1.0
+
+loss:
+  l1_weight: 1.0
+  ssim_weight: 0.3
+  gradient_weight: 0.5
+  scale_invariant_weight: 1.0       # Higher weight for metric accuracy
+
+augmentation:
+  random_crop: true
+  random_flip: true
+  color_jitter: true
+  random_rotation: 10               # More augmentation for small datasets
+
+output:
+  save_dir: "outputs_custom"
+  log_dir: "outputs_custom/logs"
+  save_every: 10
+  log_every: 5
+  visualize_every: 50

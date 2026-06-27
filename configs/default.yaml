@@ -1,0 +1,57 @@
+# ============================================
+# Metric Depth Estimation - Training Config
+# ============================================
+# Edit these values to match your setup.
+# Lines starting with # are comments (ignored).
+
+dataset:
+  name: "nyu_depth_v2"            # "nyu_depth_v2" or "custom"
+  data_dir: "data/nyu_depth_v2"   # Where dataset lives
+  custom_data_dir: "data/custom"  # For custom captured data
+  train_split: 0.8                # 80% train, 20% validation
+  image_height: 480
+  image_width: 640
+  max_depth: 10.0                 # Maximum depth in meters
+  min_depth: 0.1                  # Minimum depth in meters
+
+# Camera intrinsics (NYU Depth V2 Kinect defaults)
+# CHANGE THESE to your camera values from Step 1!
+camera:
+  fx: 518.8579
+  fy: 519.4696
+  cx: 325.5824
+  cy: 253.7362
+  params_file: null               # Set to "camera_params.json" to load from file
+
+model:
+  encoder: "efficientnet_b4"      # Options: resnet50, efficientnet_b4, mobilenetv3_small_100
+  pretrained_encoder: true        # Use ImageNet pretrained weights (recommended)
+  decoder_channels: [256, 128, 64, 32, 16]
+  use_camera_intrinsics: true     # Feed camera params into the model
+
+training:
+  epochs: 50
+  batch_size: 8                   # Reduce to 4 or 2 if GPU runs out of memory
+  learning_rate: 0.0001
+  weight_decay: 0.01
+  lr_scheduler: "cosine"
+  gradient_clip: 1.0
+
+loss:
+  l1_weight: 1.0
+  ssim_weight: 0.5
+  gradient_weight: 0.5
+  scale_invariant_weight: 0.5
+
+augmentation:
+  random_crop: true
+  random_flip: true
+  color_jitter: true
+  random_rotation: 5
+
+output:
+  save_dir: "outputs"
+  log_dir: "outputs/logs"
+  save_every: 5
+  log_every: 10
+  visualize_every: 100

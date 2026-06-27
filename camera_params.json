@@ -1,0 +1,18 @@
+{
+  "source": "database (Apple iPhone 13 (Wide))",
+  "image_width": 4032,
+  "image_height": 3024,
+  "fx": 3274.0,
+  "fy": 3274.0,
+  "cx": 2016.0,
+  "cy": 1512.0,
+  "distortion": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "focal_length_mm": 5.1,
+  "sensor_width_mm": 5.7
+}
